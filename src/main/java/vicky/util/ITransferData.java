@@ -12,14 +12,14 @@ import java.util.Map;
 public interface ITransferData {
 
 
-    public ObjectMapper getMapper()throws Exception;
-
-
-    public default <T> T transferData(Object obj, Class<T> c) throws Exception {
+    static Map transferData(Object obj, Class keytype, Class vtype) throws Exception {
         return null;
-    };
+    }
 
-    public static Map transferData(Object obj, Class keytype, Class vtype) throws Exception {
+    ObjectMapper getMapper() throws Exception;
+
+    default <T> T transferData(Object obj, Class<T> c) throws Exception {
         return null;
-    };
+    }
+
 }

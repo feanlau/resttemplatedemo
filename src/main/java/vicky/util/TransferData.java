@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import vicky.Data.ReceiveOrder;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -15,18 +14,19 @@ import java.util.Map;
  * @author vicky
  * 数据转换类json转dto
  */
-public class TransferData implements ITransferData{
+public class TransferData implements ITransferData {
 
-    private static TransferData data=new TransferData();
-    private TransferData()
-    {}
-    public static TransferData getInstance()
-    {
+    private static final TransferData data = new TransferData();
+
+    private TransferData() {
+    }
+
+    public static TransferData getInstance() {
         return data;
     }
 
 
-    public ObjectMapper getMapper()throws Exception{
+    public ObjectMapper getMapper() throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -37,16 +37,16 @@ public class TransferData implements ITransferData{
 
     /**
      * @param obj 接收JSONEntity对象或者object对象
-     * @param c 要转换的dto的类型
+     * @param c   要转换的dto的类型
      * @param <T> 返回list<dto> 或 dto的类型
      * @return 返回list<dto> 或 dto
      * @throws Exception 错误对象
      */
-    public  <T> T transferData(Object obj, Class<T> c) throws Exception {
+    public <T> T transferData(Object obj, Class<T> c) throws Exception {
 
         Object data = obj;
-        if(obj instanceof JSONEntity ) {
-            data=((JSONEntity)obj).getData();
+        if (obj instanceof JSONEntity) {
+            data = ((JSONEntity) obj).getData();
         }
         ObjectMapper mapper = getMapper();
         if (data != null) {
@@ -76,38 +76,39 @@ public class TransferData implements ITransferData{
                 return (T) lists;
             } else {
                 T C = mapper.readValue(str, c);
-                  return C;
+                return C;
             }
         }
         return null;
     }
 
     /**
-     * @param obj 接收JSONEntity对象或者object对象
+     * @param obj     接收JSONEntity对象或者object对象
      * @param keytype 要转换的map的key的类型
-     * @param vtype 要转换的map的value的类型（一般为dto对象啥的）
-     * @return 返回map类型,例如map<Long,customdto>
-     * @throws Exception  错误对象
+     * @param vtype   要转换的map的value的类型（一般为dto对象啥的）
+     * @return 返回map类型, 例如map<Long, customdto>
+     * @throws Exception 错误对象
      */
-    public  Map transferData(Object obj, Class keytype, Class vtype) throws Exception {
+    public Map transferData(Object obj, Class keytype, Class vtype) throws Exception {
         Object data = obj;
-        if(obj instanceof JSONEntity ) {
-            data=((JSONEntity)obj).getData();
+        if (obj instanceof JSONEntity) {
+            data = ((JSONEntity) obj).getData();
         }
-        ObjectMapper mapper=getMapper();
+        ObjectMapper mapper = getMapper();
         if (data != null) {
             byte[] str = mapper.writeValueAsBytes(data);
             if (data instanceof Map) {
 
-                Map map = mapper.readValue(str, new TypeReference<Map>(){
-                    public Type getType(){
+                Map map = mapper.readValue(str, new TypeReference<Map>() {
+                    public Type getType() {
                         return new ParameterizedType() {
                             @Override
                             public Type[] getActualTypeArguments() {
                                 return new Type[]{
-                                        keytype,vtype
+                                        keytype, vtype
                                 };
                             }
+
                             @Override
                             public Type getRawType() {
                                 return Map.class;

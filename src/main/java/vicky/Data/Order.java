@@ -24,7 +24,7 @@ public class Order {
     private Integer num;
 
     private String shuoming;
-      private BigDecimal mat;
+    private BigDecimal mat;
 
     public Long getId() {
         return id;

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JSONEntity {
     private Object data;
-    private String errors ;
+    private String errors;
     private int status;
 
     public int getStatus() {
@@ -35,13 +35,12 @@ public class JSONEntity {
 
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         try {
-            String sr=  objectMapper.writeValueAsString(this);
+            String sr = objectMapper.writeValueAsString(this);
 
             return sr;
 

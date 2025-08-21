@@ -16,7 +16,7 @@ import java.util.List;
 public class ReceiveOrder {
 
 
-
+    public Double abcd;
     private Long id;
     private Boolean status;
     private String detail;
@@ -26,8 +26,9 @@ public class ReceiveOrder {
     private Date createDay;
     private Integer num;
     private BigDecimal mat;
-private ReceiveOrder child;
+    private ReceiveOrder child;
     private List<People> childs;
+    private Timestamp updatetime1;
 
     public Long getId() {
         return id;
@@ -37,18 +38,13 @@ private ReceiveOrder child;
         this.id = id;
     }
 
-     public Double abcd;
-
-    public Double getAbcd()
-    {
+    public Double getAbcd() {
         return abcd;
     }
-    public void setAbcd(Double abcd)
-    {
-        this.abcd=abcd;
+
+    public void setAbcd(Double abcd) {
+        this.abcd = abcd;
     }
-
-
 
     public Boolean getStatus() {
         return status;
@@ -98,10 +94,6 @@ private ReceiveOrder child;
         this.mat = mat;
     }
 
-
-
-    private Timestamp updatetime1;
-
     public Timestamp getUpdatetime1() {
         return updatetime1;
     }
@@ -126,7 +118,6 @@ private ReceiveOrder child;
     public void setChilds(List<People> childs) {
         this.childs = childs;
     }
-
 
 
 }

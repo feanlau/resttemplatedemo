@@ -1,24 +1,21 @@
 package vicky.util.resttemplate;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 
 @ConfigurationProperties(prefix = "com.cfcc.distribute.restpool")
 public class RestClientProperties {
 
 
-      private boolean enabled=true;
-     private int poolingHttpClientConnectionManager=3;
-      private int maxTotal=100;
-      private int defaultMaxPerRout=50;
-     private int retryHandler=3;
-      private int connectTimeout=5000;
-     private int readTimeout=5000;
-    private int connectionRequestTimeout=200;
-     private boolean bufferRequestBody=false;
+    private boolean enabled = true;
+    private int poolingHttpClientConnectionManager = 3;
+    private int maxTotal = 100;
+    private int defaultMaxPerRout = 50;
+    private int retryHandler = 3;
+    private int connectTimeout = 5000;
+    private int readTimeout = 5000;
+    private int connectionRequestTimeout = 200;
+    private boolean bufferRequestBody = false;
 
 
     public boolean isEnabled() {

@@ -48,6 +48,7 @@ import java.util.*;
 
 /**
  * 该类为示例的服务调用放，请求者
+ *
  * @author vicky
  */
 @ConfigurationProperties(prefix = "server")
@@ -59,6 +60,7 @@ public class RestCustom {
 
 
     private String host;
+
     public String getHost() {
         return host;
     }
@@ -73,64 +75,60 @@ public class RestCustom {
 
     @RequestMapping("/add80")
 
-    public String add80()
-    {
+    public String add80() {
         UriComponents uriComponents = UriComponentsBuilder.fromUriString(
-                "http://USERMANAGE/usermanage/"+"update").build();
+                "http://USERMANAGE/usermanage/" + "update").build();
 
         URI uri = uriComponents.encode().toUri();
 
-        ClientHttpRequestFactory fa=rs.getRequestFactory();
+        ClientHttpRequestFactory fa = rs.getRequestFactory();
 
 
-        String obj= rs.postForObject(uri,null,String.class);
+        String obj = rs.postForObject(uri, null, String.class);
 
         return obj;
     }
-@Autowired
+
+    @Autowired
     LoadBalancerInterceptor interceptor;
 
     @RequestMapping("/order")
-    public String getOrder()
-    {
-        try{
+    public String getOrder() {
+        try {
 
 
             UriComponents uriComponents = UriComponentsBuilder.fromUriString(
-                    host+"getOrder").build();
+                    host + "getOrder").build();
             URI uri = uriComponents.encode().toUri();
             rs.getInterceptors().add(interceptor);
-            ClientHttpRequestFactory fa=rs.getRequestFactory();
+            ClientHttpRequestFactory fa = rs.getRequestFactory();
 
-            JSONEntity obj= rs.getForObject(uri,JSONEntity.class);
+            JSONEntity obj = rs.getForObject(uri, JSONEntity.class);
             //处理单个dto
-            ReceiveOrder obj1= TransferData.getInstance().transferData(obj,ReceiveOrder.class);
-            return  TransferData.getInstance().getMapper().writeValueAsString(obj1);
-        }catch(Exception e)
-        {
-            log.error("order:",e);
-         }
+            ReceiveOrder obj1 = TransferData.getInstance().transferData(obj, ReceiveOrder.class);
+            return TransferData.getInstance().getMapper().writeValueAsString(obj1);
+        } catch (Exception e) {
+            log.error("order:", e);
+        }
         return null;
 
     }
 
     @RequestMapping("/orders")
-    public String getOrders()
-    {
-        try{
+    public String getOrders() {
+        try {
 
             UriComponents uriComponents = UriComponentsBuilder.fromUriString(
-                    host+"getOrders").build();
+                    host + "getOrders").build();
             URI uri = uriComponents.encode().toUri();
 
-            JSONEntity obj= rs.getForObject(uri,JSONEntity.class);
+            JSONEntity obj = rs.getForObject(uri, JSONEntity.class);
             //处理dto的集合
-            List obj1=(List)TransferData.getInstance().transferData(obj,ReceiveOrder.class);
+            List obj1 = (List) TransferData.getInstance().transferData(obj, ReceiveOrder.class);
 
             return TransferData.getInstance().getMapper().writeValueAsString(obj1);
-        }catch(Exception e)
-        {
-            log.error("orders:",e);
+        } catch (Exception e) {
+            log.error("orders:", e);
 
 
         }
@@ -139,32 +137,28 @@ public class RestCustom {
     }
 
 
-
     @RequestMapping("/orderstoCompress")
-    public String getOrderstoCompress()
-    {
+    public String getOrderstoCompress() {
 
-        try{
+        try {
 
             UriComponents uriComponents = UriComponentsBuilder.fromUriString(
-                    host+"getOrderstoCompress").build();
+                    host + "getOrderstoCompress").build();
             URI uri = uriComponents.encode().toUri();
 
-            String obj= rs.getForObject(uri,String.class);
-            if(!"500".equalsIgnoreCase(obj))
-            {
+            String obj = rs.getForObject(uri, String.class);
+            if (!"500".equalsIgnoreCase(obj)) {
                 //处理待压缩的dto的集合
-                obj= GZIP.unCompress(obj);
-                JSONEntity entity= TransferData.getInstance().getMapper().readValue(obj,JSONEntity.class);
+                obj = GZIP.unCompress(obj);
+                JSONEntity entity = TransferData.getInstance().getMapper().readValue(obj, JSONEntity.class);
 
-                List<ReceiveOrder> obj1=(List)TransferData.getInstance().transferData(entity,ReceiveOrder.class);
+                List<ReceiveOrder> obj1 = (List) TransferData.getInstance().transferData(entity, ReceiveOrder.class);
 
 
-                return  TransferData.getInstance().getMapper().writeValueAsString(obj1);
+                return TransferData.getInstance().getMapper().writeValueAsString(obj1);
             }
-        }catch(Exception e)
-        {
-            log.error("orderstoCompress:",e);
+        } catch (Exception e) {
+            log.error("orderstoCompress:", e);
         }
         return null;
 
@@ -172,64 +166,57 @@ public class RestCustom {
 
 
     @RequestMapping("/ordersForMap")
-    public String getOrdersForMap()
-    {
-        try{
+    public String getOrdersForMap() {
+        try {
 
             UriComponents uriComponents = UriComponentsBuilder.fromUriString(
-                    host+"getOrdersForMap").build();
+                    host + "getOrdersForMap").build();
             URI uri = uriComponents.encode().toUri();
-            JSONEntity obj= rs.getForObject(uri,JSONEntity.class);
+            JSONEntity obj = rs.getForObject(uri, JSONEntity.class);
             //处理map集合存放dto
-            Map obj1=(Map)TransferData.getInstance().transferData(obj,Long.class,ReceiveOrder.class);
+            Map obj1 = (Map) TransferData.getInstance().transferData(obj, Long.class, ReceiveOrder.class);
 
-            return  TransferData.getInstance().getMapper().writeValueAsString(obj1);
+            return TransferData.getInstance().getMapper().writeValueAsString(obj1);
 
-        }catch(Exception e)
-        {
-            log.error("ordersForMap:",e);
+        } catch (Exception e) {
+            log.error("ordersForMap:", e);
         }
         return null;
 
     }
-
 
 
     @RequestMapping("/ordersForMapContainsList")
-    public String ordersForMapContainsList()
-    {
-        try{
+    public String ordersForMapContainsList() {
+        try {
 
             UriComponents uriComponents = UriComponentsBuilder.fromUriString(
-                    host+"getOrdersForMapContainsList").build();
+                    host + "getOrdersForMapContainsList").build();
             URI uri = uriComponents.encode().toUri();
-            JSONEntity obj= rs.getForObject(uri,JSONEntity.class);
+            JSONEntity obj = rs.getForObject(uri, JSONEntity.class);
             //处理map集合存放dto
-            Map<Long,Object> obj1=(Map)TransferData.getInstance().transferData(obj,Long.class,Object.class);
-             for (Map.Entry<Long, Object> entry : obj1.entrySet()) {
-                 //用户应该知道key对应的value是什么内容类型（集合/dto/简单类型）
-                   if(entry.getKey()==1L)
-                   {
-                      List<ReceiveOrder> dtos=(List)TransferData.getInstance().transferData(entry.getValue(),ReceiveOrder.class);
-                      System.out.println("dtos:"+dtos.size());
-                   }
-                   if(entry.getKey()==2L)
-                   {
-                       System.out.println(entry.getValue());
-                   }
-             }
-            return  TransferData.getInstance().getMapper().writeValueAsString(obj1);
+            Map<Long, Object> obj1 = (Map) TransferData.getInstance().transferData(obj, Long.class, Object.class);
+            for (Map.Entry<Long, Object> entry : obj1.entrySet()) {
+                //用户应该知道key对应的value是什么内容类型（集合/dto/简单类型）
+                if (entry.getKey() == 1L) {
+                    List<ReceiveOrder> dtos = (List) TransferData.getInstance().transferData(entry.getValue(), ReceiveOrder.class);
+                    System.out.println("dtos:" + dtos.size());
+                }
+                if (entry.getKey() == 2L) {
+                    System.out.println(entry.getValue());
+                }
+            }
+            return TransferData.getInstance().getMapper().writeValueAsString(obj1);
 
-        }catch(Exception e)
-        {
-            log.error("ordersForMap:",e);
+        } catch (Exception e) {
+            log.error("ordersForMap:", e);
         }
         return null;
 
     }
 
 
-    @RequestMapping(value="/add")
+    @RequestMapping(value = "/add")
     public String add() throws JsonProcessingException {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -258,16 +245,14 @@ public class RestCustom {
 
             String status = rs.postForObject(uri, entity, String.class);
             return status;
-        }catch(Exception e)
-        {
-            log.error("add:",e);
+        } catch (Exception e) {
+            log.error("add:", e);
         }
         return null;
     }
 
 
-
-    @RequestMapping(value="/orderById/{id}")
+    @RequestMapping(value = "/orderById/{id}")
     public String getOrderById(@PathVariable Long id) {
 
         try {
@@ -283,16 +268,15 @@ public class RestCustom {
             JSONEntity entity = rs.getForObject(uri, JSONEntity.class);
             ReceiveOrder obj1 = TransferData.getInstance().transferData(entity, ReceiveOrder.class);
             return TransferData.getInstance().getMapper().writeValueAsString(obj1);
-        }catch (Exception e)
-        {
-            log.error("orderByIdB:",e);
+        } catch (Exception e) {
+            log.error("orderByIdB:", e);
         }
         return null;
 
     }
 
 
-    @RequestMapping(value="/upload")
+    @RequestMapping(value = "/upload")
     public String fileupload() {
 
 //        Setting this property to false will enable streaming mode.
@@ -329,14 +313,13 @@ public class RestCustom {
             //恢复属性
             //  fa.setBufferRequestBody(true);
             return result;
-        }catch(Exception e)
-        {
-            log.error("upload:",e);
+        } catch (Exception e) {
+            log.error("upload:", e);
         }
-           return null;
+        return null;
     }
 
-    @RequestMapping(value="/download")
+    @RequestMapping(value = "/download")
     public String download() {
         try {
 
@@ -348,9 +331,8 @@ public class RestCustom {
 
 
             return str;
-        }catch(Exception e)
-        {
-            log.error("download:",e);
+        } catch (Exception e) {
+            log.error("download:", e);
         }
         return null;
 
@@ -358,14 +340,15 @@ public class RestCustom {
 
     /**
      * 该方法让浏览器直接下载文件
+     *
      * @param req
      * @param resp
      * @throws IOException
      */
-    @RequestMapping(value="/downloadToBrowser")
-    public void downloadToBrowser(HttpServletRequest req,HttpServletResponse resp) {
-        RandomAccessFile raf=null;
-        ServletOutputStream out=null;
+    @RequestMapping(value = "/downloadToBrowser")
+    public void downloadToBrowser(HttpServletRequest req, HttpServletResponse resp) {
+        RandomAccessFile raf = null;
+        ServletOutputStream out = null;
         try {
             String filePath = "/Users/vicky/workspace/idea/vicky/yy1.txt";
             File file = new File(filePath);
@@ -425,18 +408,17 @@ public class RestCustom {
             }
             out.flush();
 
-        }catch(Throwable ex)
-        {
+        } catch (Throwable ex) {
             //错误处理
 
-        }finally {
+        } finally {
 
             try {
                 out.close();
                 raf.close();
 
             } catch (IOException e) {
-                log.error("downloadToBrowser",e);
+                log.error("downloadToBrowser", e);
 
             }
 
@@ -446,42 +428,41 @@ public class RestCustom {
     }
 
 
-        @Autowired
-        @Qualifier("asyncRestTemplate")
-        AsyncRestTemplate asyncRestTemplate;
+    @Autowired
+    @Qualifier("asyncRestTemplate")
+    AsyncRestTemplate asyncRestTemplate;
 
-        /**
-         * 异步调用
-         * @return
-         */
-            @RequestMapping("/async")
-     public String async(){
-        String url = host+"fivetime";//休眠5秒的服务
+    /**
+     * 异步调用
+     *
+     * @return
+     */
+    @RequestMapping("/async")
+    public String async() {
+        String url = host + "fivetime";//休眠5秒的服务
         //调用完后立即返回（没有阻塞）
         ListenableFuture<ResponseEntity<JSONEntity>> forEntity = asyncRestTemplate.getForEntity(url, JSONEntity.class);
 
 
-
-
-                //异步调用后的回调函数
+        //异步调用后的回调函数
         forEntity.addCallback(new ListenableFutureCallback<ResponseEntity<JSONEntity>>() {
             //调用失败
             @Override
             public void onFailure(Throwable ex) {
                 log.error("=====rest response faliure======");
             }
+
             //调用成功
             @Override
             public void onSuccess(ResponseEntity<JSONEntity> result) {
-                log.info("--->async rest response success----, result = "+result.getBody());
+                log.info("--->async rest response success----, result = " + result.getBody());
             }
         });
         return "异步调用结束";
     }
 
     @RequestMapping("/async1")
-    public String async1()
-    {
+    public String async1() {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Referer", "http://localhost:9091/");
@@ -507,7 +488,7 @@ public class RestCustom {
                 host + "addOrder").build();
         URI uri = uriComponents.encode().toUri();
 
-        ListenableFuture<ResponseEntity<String>> forEntity  = asyncRestTemplate.postForEntity(uri, entity, String.class);
+        ListenableFuture<ResponseEntity<String>> forEntity = asyncRestTemplate.postForEntity(uri, entity, String.class);
         //异步调用后的回调函数
         forEntity.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
             //调用失败
@@ -515,18 +496,17 @@ public class RestCustom {
             public void onFailure(Throwable ex) {
                 log.error("=====rest response faliure======");
             }
+
             //调用成功
             @Override
             public void onSuccess(ResponseEntity<String> result) {
-                log.info("--->async rest response success----, result = "+result.getBody());
+                log.info("--->async rest response success----, result = " + result.getBody());
             }
         });
 
-return "ok";
+        return "ok";
 
     }
-
-
 
 
 }

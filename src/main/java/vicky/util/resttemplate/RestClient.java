@@ -9,7 +9,6 @@ import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -28,7 +27,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.client.AsyncClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.*;
@@ -44,6 +42,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -61,14 +60,13 @@ public class RestClient {
     @LoadBalanced
     @Scope("prototype")
     @Lazy
-    RestTemplate build() throws Exception{
+    RestTemplate build() throws Exception {
 
         RestTemplate restTemplate;
 
-       PoolingHttpClientConnectionManager poolingHttpClientConnectionManager=new PoolingHttpClientConnectionManager(proerty.getPoolingHttpClientConnectionManager(), TimeUnit.SECONDS);
-       poolingHttpClientConnectionManager.setMaxTotal(proerty.getMaxTotal());
-       poolingHttpClientConnectionManager.setDefaultMaxPerRoute(proerty.getDefaultMaxPerRout());
-
+        PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(proerty.getPoolingHttpClientConnectionManager(), TimeUnit.SECONDS);
+        poolingHttpClientConnectionManager.setMaxTotal(proerty.getMaxTotal());
+        poolingHttpClientConnectionManager.setDefaultMaxPerRoute(proerty.getDefaultMaxPerRout());
 
 
         HttpRequestRetryHandler httpRequestRetryHandler = new HttpRequestRetryHandler() {
@@ -100,61 +98,55 @@ public class RestClient {
                         .adapt(context);
                 HttpRequest request = clientContext.getRequest();
                 // 如果请求是幂等的，就再次尝试
-                if (!(request instanceof HttpEntityEnclosingRequest)) {
-                    return true;
-                }
-                return false;
+                return !(request instanceof HttpEntityEnclosingRequest);
             }
         };
 
 
-
-        HttpClientBuilder httpClientBuilder=HttpClients.custom().setConnectionManager(poolingHttpClientConnectionManager)
+        HttpClientBuilder httpClientBuilder = HttpClients.custom().setConnectionManager(poolingHttpClientConnectionManager)
                 .setRetryHandler(httpRequestRetryHandler)
                 .setKeepAliveStrategy(DefaultConnectionKeepAliveStrategy.INSTANCE);
 
-        List headers=new ArrayList();
+        List headers = new ArrayList();
 
-        headers.add(new BasicHeader("Accept-Encoding","gzip,deflate"));
-        headers.add(new BasicHeader("Accecp-Language","zh-CN,zh;q=0.8,en;q=0.6"));
-        headers.add(new BasicHeader("Connection","keep-alive"));
+        headers.add(new BasicHeader("Accept-Encoding", "gzip,deflate"));
+        headers.add(new BasicHeader("Accecp-Language", "zh-CN,zh;q=0.8,en;q=0.6"));
+        headers.add(new BasicHeader("Connection", "keep-alive"));
 
         httpClientBuilder.setDefaultHeaders(headers);
-        HttpClient httpClient=httpClientBuilder.build();
+        HttpClient httpClient = httpClientBuilder.build();
 
 
-        HttpComponentsClientHttpRequestFactory httpComponentsClientHttpRequestFactory=new HttpComponentsClientHttpRequestFactory(httpClient);
+        HttpComponentsClientHttpRequestFactory httpComponentsClientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
         httpComponentsClientHttpRequestFactory.setConnectTimeout(proerty.getConnectTimeout());
         httpComponentsClientHttpRequestFactory.setReadTimeout(proerty.getReadTimeout());
         httpComponentsClientHttpRequestFactory.setConnectionRequestTimeout(proerty.getConnectionRequestTimeout());
         httpComponentsClientHttpRequestFactory.setBufferRequestBody(proerty.isBufferRequestBody());
-        List<HttpMessageConverter<?>> messageConverters=new ArrayList<HttpMessageConverter<?>>();
+        List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
         messageConverters.add(new ByteArrayHttpMessageConverter());
-        messageConverters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
+        messageConverters.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
         messageConverters.add(new ResourceHttpMessageConverter());
         messageConverters.add(new MappingJackson2HttpMessageConverter());
         messageConverters.add(new MappingJackson2XmlHttpMessageConverter());
         messageConverters.add(new FormHttpMessageConverter());
-        restTemplate=new RestTemplate();
+        restTemplate = new RestTemplate();
         restTemplate.setMessageConverters(messageConverters);
-         restTemplate.setRequestFactory(httpComponentsClientHttpRequestFactory);
+        restTemplate.setRequestFactory(httpComponentsClientHttpRequestFactory);
         restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
 
 
-     return restTemplate;
+        return restTemplate;
     }
 
 
-
-
-    @Bean(name="asyncRestTemplate")
+    @Bean(name = "asyncRestTemplate")
     @LoadBalanced
-    AsyncRestTemplate buildAsyn() throws Exception{
+    AsyncRestTemplate buildAsyn() throws Exception {
 
         AsyncRestTemplate template = new AsyncRestTemplate();
-        List<HttpMessageConverter<?>> messageConverters=new ArrayList<HttpMessageConverter<?>>();
+        List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
         messageConverters.add(new ByteArrayHttpMessageConverter());
-        messageConverters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
+        messageConverters.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
         messageConverters.add(new ResourceHttpMessageConverter());
         messageConverters.add(new MappingJackson2HttpMessageConverter());
         messageConverters.add(new MappingJackson2XmlHttpMessageConverter());
@@ -162,16 +154,15 @@ public class RestClient {
         template.setMessageConverters(messageConverters);
 
 
-
         ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor();
         PoolingNHttpClientConnectionManager cm = new PoolingNHttpClientConnectionManager(ioReactor);
         cm.setMaxTotal(proerty.getMaxTotal());
         cm.setDefaultMaxPerRoute(proerty.getDefaultMaxPerRout());
 
-        List headers=new ArrayList();
-        headers.add(new BasicHeader("Accept-Encoding","gzip,deflate"));
-        headers.add(new BasicHeader("Accecp-Language","zh-CN,zh;q=0.8,en;q=0.6"));
-        headers.add(new BasicHeader("Connection","keep-alive"));
+        List headers = new ArrayList();
+        headers.add(new BasicHeader("Accept-Encoding", "gzip,deflate"));
+        headers.add(new BasicHeader("Accecp-Language", "zh-CN,zh;q=0.8,en;q=0.6"));
+        headers.add(new BasicHeader("Connection", "keep-alive"));
 
         CloseableHttpAsyncClient httpAsyncClients = HttpAsyncClients.custom()
                 .setConnectionManager(cm)
@@ -179,16 +170,15 @@ public class RestClient {
                 .build();
 
         HttpComponentsAsyncClientHttpRequestFactory httpComponentsAsyncClientHttpRequestFactory
-                =new HttpComponentsAsyncClientHttpRequestFactory(httpAsyncClients);
+                = new HttpComponentsAsyncClientHttpRequestFactory(httpAsyncClients);
         httpComponentsAsyncClientHttpRequestFactory.setConnectTimeout(proerty.getConnectTimeout());
         httpComponentsAsyncClientHttpRequestFactory.setReadTimeout(proerty.getReadTimeout());
         httpComponentsAsyncClientHttpRequestFactory.setConnectionRequestTimeout(proerty.getConnectionRequestTimeout());
         httpComponentsAsyncClientHttpRequestFactory.setBufferRequestBody(proerty.isBufferRequestBody());
 
 
-
         template.setAsyncRequestFactory(httpComponentsAsyncClientHttpRequestFactory);
         return template;
     }
 
-    }
+}
